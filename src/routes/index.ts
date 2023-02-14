@@ -1,5 +1,6 @@
 import express from "express"
-import resource from './_router'
+import albums from './album_routes'
+import photos from './photo_routes'
 
 // instantiate a new router
 const router = express.Router()
@@ -9,13 +10,33 @@ const router = express.Router()
  */
 router.get('/', (req, res) => {
 	res.send({
-		message: "I AM API, BEEP BOOP",
+		message: "This is an API"
 	})
 })
 
 /**
- * [EXAMPLE] /resource
+ * Albums /albums
  */
-// router.use('/resource', resource)
+router.use('/albums', albums)
+
+/**
+ * Photos /photos
+ */
+router.use('/photos', photos)
+
+/**
+ * Register a user /register
+ */
+// router.post('/register', register)
+
+/**
+ * Login a user /login
+ */
+// router.post('/login', login)
+
+/**
+ * Get a refresh token /refresh
+ */
+// router.post('/refresh', refresh)
 
 export default router

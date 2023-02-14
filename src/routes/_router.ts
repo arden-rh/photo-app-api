@@ -7,17 +7,17 @@ import { index, show, store, update, destroy } from '../controllers/_controller'
 const router = express.Router()
 
 /**
- * GET /resource
+ * GET /albums
  */
 router.get('/', index)
 
 /**
- * GET /resource/:resourceId
+ * GET /albums/:albumId
  */
-router.get('/:resourceId', show)
+router.get('/:albumId', show)
 
 /**
- * POST /resource
+ * POST /albums
  */
 router.post('/', [], store)
 
