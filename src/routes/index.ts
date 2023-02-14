@@ -1,4 +1,5 @@
 import express from "express"
+import { login, refresh, register } from "../controllers/user_controller"
 import albums from './album_routes'
 import photos from './photo_routes'
 
@@ -27,16 +28,16 @@ router.use('/photos', photos)
 /**
  * Register a user /register
  */
-// router.post('/register', register)
+router.post('/register', register)
 
 /**
  * Login a user /login
  */
-// router.post('/login', login)
+router.post('/login', login)
 
 /**
  * Get a refresh token /refresh
  */
-// router.post('/refresh', refresh)
+router.post('/refresh', refresh)
 
 export default router
