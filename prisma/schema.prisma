@@ -1,8 +1,36 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model Album {
+    id      Int     @id @default(autoincrement()) @db.UnsignedInt
+    name    String
+    photos  Photo[]
+    user    User    @relation(fields: [user_id], references: [id])
+    user_id Int     @db.UnsignedInt
+}
+
+model Photo {
+    id      Int     @id @default(autoincrement()) @db.UnsignedInt
+    title   String
+    url     String
+    comment String?  @default("")
+    albums  Album[]
+    user    User    @relation(fields: [user_id], references: [id])
+    user_id Int     @db.UnsignedInt
+}
+
+model User {
+    id         Int     @id @default(autoincrement()) @db.UnsignedInt
+    email      String  @unique
+    password   String
+    first_name String
+    last_name  String
+    photos     Photo[]
+    albums     Album[]
 }
