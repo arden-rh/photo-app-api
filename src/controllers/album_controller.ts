@@ -5,6 +5,7 @@ import Debug from 'debug'
 import { Request, Response } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../prisma'
+import { getAllAlbums } from '../services/album_service'
 
 // Create a new debug instance
 const debug = Debug('prisma-boilerplate:album_controller')
@@ -12,7 +13,17 @@ const debug = Debug('prisma-boilerplate:album_controller')
 /**
  * Get all albums
  */
-export const index = async (req: Request, res: Response) => {
+export const index = async (req: Request, res: Response) => { 
+    try {
+		const albums = await getAllAlbums()
+		res.status(200).send({
+			status: "success",
+			data: albums
+		})
+	} catch (err) {
+        debug("Error thrown when finding albums", err)
+		res.status(500).send({ status: "error", message: "Something went wrong" })
+	}
 }
 
 /**

@@ -1,5 +1,6 @@
 import express from "express"
 import { login, refresh, register } from "../controllers/user_controller"
+import { createUserRules } from "../validations/user_validation"
 import albums from './album_routes'
 import photos from './photo_routes'
 
@@ -28,7 +29,7 @@ router.use('/photos', photos)
 /**
  * Register a user /register
  */
-router.post('/register', register)
+router.post('/register', createUserRules, register)
 
 /**
  * Login a user /login

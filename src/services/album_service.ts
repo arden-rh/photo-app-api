@@ -1,6 +1,7 @@
 /** Album Service **/
 
 import prisma from "../prisma"
+import { CreateAlbumData } from "../types"
 
 /**
  * Get all albums
@@ -31,14 +32,14 @@ export const getAlbumById = async (id : number) => {
  * Create an album
  * @param data Data to create a new author
  */
-export const createAlbum = async (data : ) => {
+export const createAlbum = async (data : any) => {
 	return await prisma.album.create({data})
 }
 
 /**
  * Update album by id
  */
-export const updateAlbum = async (id : number, data : ) => {
+export const updateAlbum = async (id : number, data : any) => {
 
 	return await prisma.album.update({
 		where: {
@@ -49,12 +50,12 @@ export const updateAlbum = async (id : number, data : ) => {
 }
 
 /**
- * Delete an author by id
+ * Delete an alnum by id
  * @param id authorId
  */
-export const deleteAuthor = async (id : number) => {
+export const deleteAlbum = async (id : number) => {
 
-	return await prisma.author.delete({
+	return await prisma.album.delete({
 		where: { id }
 	})
 
