@@ -30,16 +30,20 @@ export const getAlbumById = async (id : number) => {
 
 /**
  * Create an album
- * @param data Data to create a new author
+ * @param data Data to create a new album
  */
-export const createAlbum = async (data : any) => {
-	return await prisma.album.create({data})
+export const createAlbum = async (data : CreateAlbumData) => {
+	return await prisma.album.create({
+		data: {
+			title: data.title
+		}
+	})
 }
 
 /**
  * Update album by id
  */
-export const updateAlbum = async (id : number, data : any) => {
+export const updateAlbum = async (id : number, data : CreateAlbumData) => {
 
 	return await prisma.album.update({
 		where: {
@@ -50,8 +54,8 @@ export const updateAlbum = async (id : number, data : any) => {
 }
 
 /**
- * Delete an alnum by id
- * @param id authorId
+ * Delete an album by id
+ * @param id albumrId
  */
 export const deleteAlbum = async (id : number) => {
 

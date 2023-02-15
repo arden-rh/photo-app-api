@@ -13,7 +13,8 @@ const debug = Debug('prisma-boilerplate:album_controller')
 /**
  * Get all albums
  */
-export const index = async (req: Request, res: Response) => { 
+export const index = async (req: Request, res: Response) => {
+    
     try {
 		const albums = await getAllAlbums()
 		res.status(200).send({
