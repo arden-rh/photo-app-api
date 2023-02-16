@@ -5,7 +5,7 @@ import Debug from 'debug'
 import { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
 import prisma from '../prisma'
-import { createPhoto, getAllPhotos } from '../services/photo_services'
+import { createPhoto, getAllPhotos, getPhotoById } from '../services/photo_services'
 import { getUserByEmail } from '../services/user_service'
 import { createPhotoRules } from '../validations/photo_validation'
 
@@ -36,6 +36,30 @@ export const index = async (req: Request, res: Response) => {
  * Get a single photo
  */
 export const show = async (req: Request, res: Response) => {
+
+	const user = await getUserByEmail(req.token!.email)
+
+	const photoId = Number(req.params.photoId)
+
+	try {
+		const photo = await getPhotoById(photoId)
+
+		if (photo.user_id !== user!.id) {
+			res.status(401).send({
+				status: "fail",
+				data: "Not authorised access"
+			})
+			return
+		}
+
+		res.status(200).send({
+			status: "success",
+			data: photo
+		})
+	} catch (err) {
+		debug("Error thrown when finding a photo %s", err)
+		res.status(500).send({ status: "error", message: `Error when trying to find the photo with id ${req.params.photoId}`})
+	}
 }
 
 /**

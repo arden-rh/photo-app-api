@@ -55,8 +55,8 @@ export const show = async (req: Request, res: Response) => {
 			data: album
 		})
 	} catch (err) {
-		debug("Error thrown when finding album %s", err)
-		res.status(500).send({ status: "error", message: `Error when trying to find album with id ${req.params.albumId}`})
+		debug("Error thrown when finding the album %s", err)
+		res.status(500).send({ status: "error", message: `Error when trying to find the album with id ${req.params.albumId}`})
 	}
 }
 

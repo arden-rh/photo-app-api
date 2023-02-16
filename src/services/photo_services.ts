@@ -16,7 +16,7 @@ export const getAllPhotos = async ( id : number) => {
  * Get a single photo by id
  * @param id Photo Id
  */
-export const getPhotoId = async (id : number) => {
+export const getPhotoById = async (id : number) => {
 
 	return await prisma.photo.findUniqueOrThrow({
 		where: {
