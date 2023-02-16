@@ -1,7 +1,7 @@
 /** Photo Service **/
 
 import prisma from "../prisma"
-import { CreatePhotoData } from "../types"
+import { CreatePhotoData, UpdatePhotoData } from "../types"
 
 /**
  * Get all photos
@@ -36,7 +36,7 @@ export const createPhoto = async (data : CreatePhotoData) => {
 /**
  * Update photo by id
  */
-export const photoAlbum = async (id : number, data : CreatePhotoData) => {
+export const updatePhoto = async (id : number, data : UpdatePhotoData) => {
 
 	return await prisma.photo.update({
 		where: {

@@ -36,3 +36,9 @@ export type JwtPayload = {
 export type UpdateAlbumData = {
 	title?: string
 }
+
+export type UpdatePhotoData = {
+	title?: string,
+	url?: string
+	comment?: string
+}
