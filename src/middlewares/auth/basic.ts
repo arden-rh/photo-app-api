@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 import Debug from "debug"
 import { Response, Request, NextFunction } from "express"
 
-const debug = Debug("prisma-books:basic")
+const debug = Debug("uppgift-02:basic")
 
 /**
  * Basic auth middleware

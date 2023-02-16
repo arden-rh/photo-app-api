@@ -1,5 +1,7 @@
 import express from "express"
 import { login, refresh, register } from "../controllers/user_controller"
+import { validateToken } from "../middlewares/auth/jwt"
+import { createAlbumRules } from "../validations/album_validation"
 import { createUserRules } from "../validations/user_validation"
 import albums from './album_routes'
 import photos from './photo_routes'
@@ -19,12 +21,12 @@ router.get('/', (req, res) => {
 /**
  * Albums /albums
  */
-router.use('/albums', albums)
+router.use('/albums', validateToken, albums)
 
 /**
  * Photos /photos
  */
-router.use('/photos', photos)
+router.use('/photos', validateToken, photos)
 
 /**
  * Register a user /register
@@ -39,6 +41,6 @@ router.post('/login', login)
 /**
  * Get a refresh token /refresh
  */
-router.post('/refresh', refresh)
+router.post('/refresh', validateToken, refresh)
 
 export default router

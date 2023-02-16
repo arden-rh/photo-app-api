@@ -2,7 +2,7 @@
  * Photo Router
  */
 import express from 'express'
-import { index, show, store, update, destroy } from '../controllers/_controller'
+import { index, show, store, update, destroy } from '../controllers/photo_controller'
 const router = express.Router()
 
 /**

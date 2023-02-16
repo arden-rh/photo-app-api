@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken"
 import { JwtPayload } from "../../types"
 
 
-const debug = Debug("prisma-books:jwt")
+const debug = Debug("uppgift-02:jwt")
 
 /**
  * Validate access token
@@ -16,7 +16,7 @@ const debug = Debug("prisma-books:jwt")
  * Authorization: Bearer <token>
  */
 export const validateToken = (req: Request, res: Response, next: NextFunction) => {
-	debug("Hello from JWT")
+	debug("This is JWT")
 
 	// check for auth header or ❌
 	if (!req.headers.authorization) {

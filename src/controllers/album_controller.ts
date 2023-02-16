@@ -8,13 +8,13 @@ import prisma from '../prisma'
 import { getAllAlbums } from '../services/album_service'
 
 // Create a new debug instance
-const debug = Debug('prisma-boilerplate:album_controller')
+const debug = Debug('uppgift-02:album_controller')
 
 /**
  * Get all albums
  */
 export const index = async (req: Request, res: Response) => {
-    
+
     try {
 		const albums = await getAllAlbums()
 		res.status(200).send({

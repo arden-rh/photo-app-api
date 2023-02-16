@@ -4,13 +4,6 @@ import prisma from "../prisma"
 import { CreateUserData } from "../types"
 
 /**
- * Get all users
- */
-export const getAllUsers = async () => {
-	return await prisma.user.findMany()
-}
-
-/**
  * Get a single user by email
  * @param email User email
  * @returns
@@ -44,16 +37,4 @@ export const createUser = async (data : CreateUserData) => {
 
 	return await prisma.user.create({data})
 }
-
-/**
- * Delete a single user by id
- * @param id userId
- */
-export const deleteUser = async (id: number) => {
-
-	return await prisma.user.delete({
-		where: { id }
-	})
-}
-
 
