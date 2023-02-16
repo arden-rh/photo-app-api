@@ -1,8 +1,8 @@
-/** 
- * Type defintions 
- * */
+/** Type defintions **/
 
-/* Create Album Data Type */
+/**
+ * Create Album Data Type 
+ * */
 export type CreateAlbumData = {
 	title: string,
 	user_id: number 
@@ -12,7 +12,8 @@ export type CreateAlbumData = {
 export type CreatePhotoData = {
 	title: string,
 	url: string
-	comment?: string
+	comment?: string,
+	user_id: number
 }
 
 /* Create User Data Type */
@@ -30,4 +31,8 @@ export type JwtPayload = {
 	last_name: string,
 	iat?: number,
 	exp?: number
+}
+
+export type UpdateAlbumData = {
+	title?: string
 }

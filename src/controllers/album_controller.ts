@@ -4,7 +4,7 @@
 import Debug from 'debug'
 import { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
-import { createAlbum, getAlbumById, getAllAlbums } from '../services/album_service'
+import { createAlbum, getAlbumById, getAllAlbums, updateAlbum } from '../services/album_service'
 import { getUserByEmail } from '../services/user_service'
 
 // Create a new debug instance
@@ -42,7 +42,7 @@ export const show = async (req: Request, res: Response) => {
 	try {
 		const album = await getAlbumById(albumId)
 
-		if (album.id !== user!.id) {
+		if (album.user_id !== user!.id) {
 			res.status(401).send({
 				status: "fail",
 				data: "Not authorised access"
@@ -78,20 +78,12 @@ export const store = async (req: Request, res: Response) => {
 
 	const user = await getUserByEmail(req.token!.email)
 
-	console.log(user)
-
 	try {
 
 		const album = await createAlbum({
 			title: data.title,
 			user_id: user!.id
 		})
-
-		// album.user_id = user!.id
-
-		console.log(album)
-
-		// const user_id = await user!.id
 
 		res.status(201).send({
 			status: "success",
@@ -108,6 +100,43 @@ export const store = async (req: Request, res: Response) => {
  * Update an album
  */
 export const update = async (req: Request, res: Response) => {
+
+	const validationErrors = validationResult(req)
+
+    if (!validationErrors.isEmpty()) {
+		return res.status(400).send({
+			status: "fail",
+			data: validationErrors.array()
+		});
+	}
+
+    const data = matchedData(req)
+
+	const user = await getUserByEmail(req.token!.email)
+
+	const albumId = Number(req.params.albumId)
+
+	try {
+
+		const album = await updateAlbum(albumId, data)
+
+		if (album.user_id !== user!.id) {
+			res.status(401).send({
+				status: "fail",
+				data: "Not authorised access"
+			})
+			return
+		}
+
+		res.status(201).send({
+			status: "success",
+			data: album
+		})
+	} catch (err) {
+		debug("Error thrown when updating the album %o : %o", data.id, err)
+		res.status(500).send({ status: "error", message: `Error thrown when trying to update album ${data.id}`})
+	}
+
 }
 
 /**

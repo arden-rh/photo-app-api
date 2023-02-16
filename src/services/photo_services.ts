@@ -6,9 +6,9 @@ import { CreatePhotoData } from "../types"
 /**
  * Get all photos
  */
-export const getAllPhotos = async () => {
+export const getAllPhotos = async ( id : number) => {
 
-	return await prisma.photo.findMany()
+	return await prisma.photo.findMany({ where: {user_id: id} })
 
 }
 

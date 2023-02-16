@@ -1,14 +1,14 @@
 /** Album Service **/
 
 import prisma from "../prisma"
-import { CreateAlbumData } from "../types"
+import { CreateAlbumData, UpdateAlbumData } from "../types"
 
 /**
  * Get all albums
  */
 export const getAllAlbums = async (id : number) => {
 
-	return await prisma.album.findMany({ where: {user_id: id}})
+	return await prisma.album.findMany({ where: {user_id: id} })
 
 }
 
@@ -39,7 +39,7 @@ export const createAlbum = async (data : CreateAlbumData) => {
 /**
  * Update album by id
  */
-export const updateAlbum = async (id : number, data : CreateAlbumData) => {
+export const updateAlbum = async (id : number, data : UpdateAlbumData) => {
 
 	return await prisma.album.update({
 		where: {

@@ -12,7 +12,6 @@ export const createPhotoRules = [
 
 export const updatePhotoRules = [
 
-	body('photo_id').isInt(),
 	body('title').optional().isString().isLength({ min: 3 }).withMessage('Has to be a string with at least 3 characters long'),
 	body('url').optional().isURL(),
 	body('comment').optional().isString().isLength({ min: 3}).withMessage('Has to be a string with at least 3 characters long')

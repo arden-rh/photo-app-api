@@ -25,7 +25,7 @@ router.post('/', createAlbumRules, store)
 /**
  * PATCH /albums/:albumId
  */
-router.patch('/:albumId', [], update)
+router.patch('/:albumId', createAlbumRules, update)
 
 /**
  * POST /albums/:albumId/photos
