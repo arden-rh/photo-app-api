@@ -50,6 +50,27 @@ export const updateAlbum = async (id : number, data : UpdateAlbumData) => {
 }
 
 /**
+ * Add photo to album
+ */
+
+export const addPhotoToAlbum = async (id : number, photoId : number) => {
+
+	return await prisma.album.update({
+		where: {
+			id
+		},
+		data: {
+			photos: {
+				connect: {
+					id: photoId
+				}
+			}
+		}
+	})
+
+}
+
+/**
  * Delete an album by id
  * @param id albumrId
  */

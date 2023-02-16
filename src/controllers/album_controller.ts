@@ -4,7 +4,8 @@
 import Debug from 'debug'
 import { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
-import { createAlbum, getAlbumById, getAllAlbums, updateAlbum } from '../services/album_service'
+import prisma from '../prisma'
+import { addPhotoToAlbum, createAlbum, getAlbumById, getAllAlbums, updateAlbum } from '../services/album_service'
 import { getUserByEmail } from '../services/user_service'
 
 // Create a new debug instance
@@ -143,7 +144,53 @@ export const update = async (req: Request, res: Response) => {
  * Add a photo to album
  */
 export const addPhoto = async (req : Request, res : Response) => {
+
+	const validationErrors = validationResult(req)
+
+    if (!validationErrors.isEmpty()) {
+		return res.status(400).send({
+			status: "fail",
+			data: validationErrors.array()
+		});
+	}
+
+    const data = matchedData(req)
+
+	const user = await getUserByEmail(req.token!.email)
+
+	const albumId = Number(req.params.albumId)
     
+	const photoId = data.photo_id
+
+	const photo = await prisma.photo.findFirstOrThrow(photoId)
+
+	console.log(photo.id)
+
+	try {
+
+		const result = await addPhotoToAlbum(albumId, photoId)
+
+		if (result.user_id !== user!.id) {
+			res.status(401).send({
+				status: "fail",
+				data: "Not authorised access"
+			})
+			return
+		}
+
+		// const photo = await prisma.photo.findFirstOrThrow(photoId)
+
+		res.status(201).send({
+			status: "success",
+			data: result
+		})
+	} catch (err) {
+		debug("Error thrown when adding photo %o to an album %o: %o", photoId, albumId, err)
+		res.status(500).send({ 
+			status: "error",
+			message: `Error thrown when adding photo ${photoId} to album ${albumId}.`})
+	}
+
 }
 
 /**
