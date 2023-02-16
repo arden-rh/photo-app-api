@@ -6,9 +6,9 @@ import { CreateAlbumData } from "../types"
 /**
  * Get all albums
  */
-export const getAllAlbums = async () => {
+export const getAllAlbums = async (id : number) => {
 
-	return await prisma.album.findMany()
+	return await prisma.album.findMany({ where: {user_id: id}})
 
 }
 
@@ -33,11 +33,7 @@ export const getAlbumById = async (id : number) => {
  * @param data Data to create a new album
  */
 export const createAlbum = async (data : CreateAlbumData) => {
-	return await prisma.album.create({
-		data: {
-			title: data.title
-		}
-	})
+	return await prisma.album.create({data})
 }
 
 /**

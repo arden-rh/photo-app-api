@@ -4,6 +4,7 @@
 import express from 'express'
 import { index, show, store, update, addPhoto, addPhotos, destroy, removePhoto } from '../controllers/album_controller'
 import { createAlbumRules } from '../validations/album_validation'
+
 const router = express.Router()
 
 /**

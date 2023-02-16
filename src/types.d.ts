@@ -4,7 +4,8 @@
 
 /* Create Album Data Type */
 export type CreateAlbumData = {
-	title: string
+	title: string,
+	user_id: number 
 }
 
 /* Create Photo Data Type */
