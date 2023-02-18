@@ -12,3 +12,8 @@ export const addPhotoToAlbumRules = [
 
 	body('photo_id').isInt()
 ]
+
+export const addPhotosToAlbumRules = [
+
+	body('photo_id').isArray()
+]

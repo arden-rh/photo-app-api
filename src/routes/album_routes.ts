@@ -3,7 +3,7 @@
  */
 import express from 'express'
 import { index, show, store, update, addPhoto, addPhotos, destroy, removePhoto } from '../controllers/album_controller'
-import { addPhotoToAlbumRules, createAlbumRules } from '../validations/album_validation'
+import { addPhotosToAlbumRules, addPhotoToAlbumRules, createAlbumRules } from '../validations/album_validation'
 
 const router = express.Router()
 
@@ -35,7 +35,7 @@ router.post('/:albumId/photos', addPhotoToAlbumRules, addPhoto)
 /**
  * POST /albums/:albumId/photos - add multiple photos
  */
-router.post('/:albumId/photos', addPhotos)
+router.post('/:albumId/photos', addPhotosToAlbumRules, addPhotos)
 
 /**
  * DELETE /albums/:albumId
