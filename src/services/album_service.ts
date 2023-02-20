@@ -1,7 +1,7 @@
 /** Album Service **/
 
 import prisma from "../prisma"
-import { CreateAlbumData, UpdateAlbumData } from "../types"
+import { AddPhotoToAlbumData, CreateAlbumData, UpdateAlbumData } from "../types"
 
 /**
  * Get all albums
@@ -18,9 +18,9 @@ export const getAllAlbums = async (id : number) => {
  */
 export const getAlbumById = async (id : number) => {
 
-	return await prisma.album.findUniqueOrThrow({
+	return await prisma.album.findFirstOrThrow({
 		where: {
-			id
+			id: id
 		},
 		include: {
 			photos: true
@@ -74,7 +74,7 @@ export const addPhotoToAlbum = async (albumId : number, photoId : number) => {
  * Add photo to album
  */
 
-export const addPhotosToAlbum = async (albumId : number, photoIds : Array<object>) => {
+export const addPhotosToAlbum = async (albumId : number, photoIds : Array<AddPhotoToAlbumData>) => {
 
 	
 	return await prisma.album.update({

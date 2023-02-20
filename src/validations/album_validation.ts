@@ -16,9 +16,6 @@ export const updateAlbumRules = [
 
 export const addPhotosToAlbumRules = [
 
-	body('photo_id').custom( async data => {
-		if (data.isInt || data.isArray ) {
-			return data
-		}
-	} )
+	body('photo_id').isArray( { min : 1}),
+	body('photo_id.*').isInt()
 ]

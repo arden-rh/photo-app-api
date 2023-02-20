@@ -16,10 +16,8 @@ const debug = Debug('uppgift-02:album_controller')
  */
 export const index = async (req: Request, res: Response) => {
 
-	const user = await getUserByEmail(req.token!.email)
-
 	try {
-		const albums = await getAllAlbums(user!.id)
+		const albums = await getAllAlbums(req.token.id)
 
 		res.status(200).send({
 			status: "success",
@@ -36,14 +34,24 @@ export const index = async (req: Request, res: Response) => {
  */
 export const show = async (req: Request, res: Response) => {
 
-	const user = await getUserByEmail(req.token!.email)
-
 	const albumId = Number(req.params.albumId)
+
+/* 	try {
+
+		await getAlbumById(albumId, req.token.id)
+
+	} catch (err) {
+
+		res.status(401).send({
+			status: "fail",
+			data: "Not authorised access"
+		})
+	} */
 
 	try {
 		const album = await getAlbumById(albumId)
 
-		if (album.user_id !== user!.id) {
+		if (album.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
 				data: "Not authorised access"
@@ -53,7 +61,12 @@ export const show = async (req: Request, res: Response) => {
 
 		res.status(200).send({
 			status: "success",
-			data: album
+			data: {
+				id: album.id,
+				title: album.title,
+				photos: album.photos
+
+			}
 		})
 	} catch (err) {
 		debug("Error thrown when finding the album %s", err)
@@ -77,13 +90,11 @@ export const store = async (req: Request, res: Response) => {
 
 	const data = matchedData(req)
 
-	const user = await getUserByEmail(req.token!.email)
-
 	try {
 
 		const album = await createAlbum({
 			title: data.title,
-			user_id: user!.id
+			user_id: req.token.id
 		})
 
 		res.status(201).send({
@@ -113,15 +124,13 @@ export const update = async (req: Request, res: Response) => {
 
 	const data = matchedData(req)
 
-	const user = await getUserByEmail(req.token!.email)
-
 	const albumId = Number(req.params.albumId)
 
 	try {
 
 		const album = await updateAlbum(albumId, data)
 
-		if (album.user_id !== user!.id) {
+		if (album.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
 				data: "Not authorised access"
@@ -156,17 +165,29 @@ export const addPhoto = async (req: Request, res: Response) => {
 
 	const data = matchedData(req)
 
-	const user = await getUserByEmail(req.token!.email)
-
 	const albumId = Number(req.params.albumId)
 
 	const photoId = data.photo_id
 
 	try {
 
-		if (data.photo_id.isArray()) {
-			
-		}
+		const photo = await prisma.photo.findFirstOrThrow({
+			where: {
+				id: photoId,
+				user_id: req.token.id
+			}
+		})
+
+	} catch (err) {
+
+		res.status(401).send({
+			status: "fail",
+			data: "Not authorised access"
+		})
+
+	}
+
+	try {
 
 		const photo = await prisma.photo.findFirstOrThrow({
 			where: {
@@ -174,7 +195,8 @@ export const addPhoto = async (req: Request, res: Response) => {
 			}
 		})
 
-		if (photo.user_id !== user!.id) {
+		if (photo.user_id !== req.token.id) {
+
 			res.status(401).send({
 				status: "fail",
 				data: "Not authorised access"
@@ -184,7 +206,7 @@ export const addPhoto = async (req: Request, res: Response) => {
 
 		const result = await addPhotoToAlbum(albumId, photoId)
 
-		if (result.user_id !== user!.id) {
+		if (result.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
 				data: "Not authorised access"
@@ -192,9 +214,9 @@ export const addPhoto = async (req: Request, res: Response) => {
 			return
 		}
 
-		res.status(201).send({
+		res.status(200).send({
 			status: "success",
-			data: null
+			data: "You succcessfully "
 		})
 	} catch (err) {
 		debug("Error thrown when adding photo %o to album %o: %o", photoId, albumId, err)
@@ -203,7 +225,6 @@ export const addPhoto = async (req: Request, res: Response) => {
 			message: `Error thrown when adding photo ${photoId} to album ${albumId}.`
 		})
 	}
-
 }
 
 /**
@@ -222,55 +243,54 @@ export const addPhotos = async (req: Request, res: Response) => {
 
 	const data = matchedData(req)
 
-	console.log(data)
-
-	const user = await getUserByEmail(req.token!.email)
-
 	const albumId = Number(req.params.albumId)
 
-	const photoIdObjects = data.photo_id.map((photoId : number) => {
-		return {
-			id: photoId
-		}
-	})
 	
-	console.log(photoIdObjects, data.photo_id)
+	console.log(data.photo_id)
 
 	try {
 
-		const photo = await prisma.photo.findFirstOrThrow({
-			where: {
-				id: data.photo_id
+		const album = await getAlbumById(albumId)
+
+		if (album.user_id !== req.token.id) {
+			res.status(401).send({
+				status: "fail",
+				data: "Not authorised access"
+			})
+			return
+		}
+
+		const userPhotosIds = await prisma.photo.findMany({ where: { user_id : req.token.id}, select: { id: true } })
+
+		if (!data.photo_id.every((photo : number) => userPhotosIds
+		.map(photo => photo.id)
+		.includes(photo))) {
+			res.status(401).send({
+				status: "fail",
+				data: "Not authorised access"
+			})
+			return
+		}
+
+		const photoIdObjects = (data.photo_id).map((photoId : number) => {
+			return {
+				id: photoId
 			}
 		})
 
-		if (photo.user_id !== user!.id) {
-			res.status(401).send({
-				status: "fail",
-				data: "Not authorised access"
-			})
-			return
-		}
-
 		const result = await addPhotosToAlbum(albumId, photoIdObjects)
 
-		if (result.user_id !== user!.id) {
-			res.status(401).send({
-				status: "fail",
-				data: "Not authorised access"
-			})
-			return
-		}
+		console.log(result)
 
-		res.status(201).send({
+		res.status(200).send({
 			status: "success",
-			data: null
+			data: `Photos with id: ${data.photo_id} was successfully added to album ${result.title}`
 		})
 	} catch (err) {
-		debug("Error thrown when adding photos %o to album %o: %o", photoIdObjects, albumId, err)
+		debug("Error thrown when adding photos %o to album %o: %o", data.photo_id, albumId, err)
 		res.status(500).send({
 			status: "error",
-			message: `Error thrown when adding photos ${photoIdObjects} to album ${albumId}.`
+			message: `Error thrown when adding photos ${data.photo_id} to album ${albumId}.`
 		})
 	}
 

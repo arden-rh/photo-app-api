@@ -8,7 +8,16 @@ import { CreatePhotoData, UpdatePhotoData } from "../types"
  */
 export const getAllPhotos = async ( id : number) => {
 
-	return await prisma.photo.findMany({ where: {user_id: id} })
+	return await prisma.photo.findMany({ 
+		where: { user_id: id},
+		select: {
+			id: true,
+			title: true,
+			url: true,
+			comment: true,
+			user_id: false
+		}
+	})
 
 }
 
@@ -21,7 +30,7 @@ export const getPhotoById = async (id : number) => {
 	return await prisma.photo.findUniqueOrThrow({
 		where: {
 			id
-		}
+		},
 	})
 }
 

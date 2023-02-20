@@ -40,6 +40,6 @@ router.post('/login', login)
 /**
  * Get a refresh token /refresh
  */
-router.post('/refresh', validateToken, refresh)
+router.post('/refresh', refresh)
 
 export default router

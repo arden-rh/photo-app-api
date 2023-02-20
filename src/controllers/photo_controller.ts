@@ -52,7 +52,12 @@ export const show = async (req: Request, res: Response) => {
 
 		res.status(200).send({
 			status: "success",
-			data: photo
+			data: {
+				id: photo.id,
+				title: photo.title,
+				url: photo.url,
+				comment: photo.comment
+			}
 		})
 	} catch (err) {
 		debug("Error thrown when finding a photo %s", err)
@@ -113,6 +118,8 @@ export const update = async (req: Request, res: Response) => {
 		}
 	
 		const data = matchedData(req)
+
+		console.log(data, req.body)
 	
 		const user = await getUserByEmail(req.token!.email)
 	

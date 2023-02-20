@@ -42,3 +42,7 @@ export type UpdatePhotoData = {
 	url?: string
 	comment?: string
 }
+
+export type AddPhotoToAlbumData = {
+	id: number
+}

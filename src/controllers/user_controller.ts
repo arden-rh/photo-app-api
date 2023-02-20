@@ -172,7 +172,7 @@ export const refresh = async (req: Request, res: Response) => {
 		}
 
 		const access_token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-			expiresIn: process.env.REFRESH_TOKEN_LIFE_TIME || "1d"
+			expiresIn: process.env.ACCESS_TOKEN_LIFETIME || "1d"
 		})
 
 		res.status(200).send({
