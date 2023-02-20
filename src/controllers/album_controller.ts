@@ -5,7 +5,7 @@ import Debug from 'debug'
 import { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
 import prisma from '../prisma'
-import { addPhotosToAlbum, addPhotoToAlbum, createAlbum, getAlbumById, getAllAlbums, updateAlbum } from '../services/album_service'
+import { addPhotosToAlbum, addPhotoToAlbum, createAlbum, deleteAlbum, getAlbumById, getAllAlbums, updateAlbum } from '../services/album_service'
 import { getUserByEmail } from '../services/user_service'
 
 // Create a new debug instance
@@ -36,17 +36,17 @@ export const show = async (req: Request, res: Response) => {
 
 	const albumId = Number(req.params.albumId)
 
-/* 	try {
-
-		await getAlbumById(albumId, req.token.id)
-
-	} catch (err) {
-
-		res.status(401).send({
-			status: "fail",
-			data: "Not authorised access"
-		})
-	} */
+	/* 	try {
+	
+			await getAlbumById(albumId, req.token.id)
+	
+		} catch (err) {
+	
+			res.status(401).send({
+				status: "fail",
+				data: "Not authorised access"
+			})
+		} */
 
 	try {
 		const album = await getAlbumById(albumId)
@@ -245,9 +245,6 @@ export const addPhotos = async (req: Request, res: Response) => {
 
 	const albumId = Number(req.params.albumId)
 
-	
-	console.log(data.photo_id)
-
 	try {
 
 		const album = await getAlbumById(albumId)
@@ -260,27 +257,25 @@ export const addPhotos = async (req: Request, res: Response) => {
 			return
 		}
 
-		const userPhotosIds = await prisma.photo.findMany({ where: { user_id : req.token.id}, select: { id: true } })
+		const userPhotosIds = await prisma.photo.findMany({ where: { user_id: req.token.id }, select: { id: true } })
 
-		if (!data.photo_id.every((photo : number) => userPhotosIds
-		.map(photo => photo.id)
-		.includes(photo))) {
-			res.status(401).send({
+		if (!data.photo_id.every((photo: number) => userPhotosIds
+			.map(photo => photo.id)
+			.includes(photo))) {
+			res.status(400).send({
 				status: "fail",
-				data: "Not authorised access"
+				data: `No photo with id ${data.photo_id} exist on user ${req.token.email}`
 			})
 			return
 		}
 
-		const photoIdObjects = (data.photo_id).map((photoId : number) => {
+		const photoIdObjects = (data.photo_id).map((photoId: number) => {
 			return {
 				id: photoId
 			}
 		})
 
 		const result = await addPhotosToAlbum(albumId, photoIdObjects)
-
-		console.log(result)
 
 		res.status(200).send({
 			status: "success",
@@ -300,6 +295,32 @@ export const addPhotos = async (req: Request, res: Response) => {
  * Delete an album
  */
 export const destroy = async (req: Request, res: Response) => {
+
+	const albumId = Number(req.params.albumId)
+
+	try {
+
+		const album = await getAlbumById(albumId)
+
+		if (album.user_id !== req.token.id) {
+			res.status(401).send({
+				status: "fail",
+				data: "Not authorised access"
+			})
+			return
+		}
+
+		await deleteAlbum(albumId)
+
+		res.status(200).send({ status: "success", data: `Album ${album.title} deleted` })
+
+	} catch (err) {
+		debug("Error thrown when trying to delete album %o: %o", albumId, err)
+		res.status(500).send({
+			status: "error",
+			message: `Error thrown when deleting album ${albumId}.`
+		})
+	}
 }
 
 /**
