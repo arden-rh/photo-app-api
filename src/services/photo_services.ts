@@ -30,7 +30,7 @@ export const getPhotoById = async (id : number) => {
 	return await prisma.photo.findUniqueOrThrow({
 		where: {
 			id
-		},
+		}
 	})
 }
 
@@ -39,7 +39,7 @@ export const getPhotoById = async (id : number) => {
  * @param data Data to create a new photo
  */
 export const createPhoto = async (data : CreatePhotoData) => {
-	return await prisma.photo.create({data})
+	return await prisma.photo.create({ data })
 }
 
 /**

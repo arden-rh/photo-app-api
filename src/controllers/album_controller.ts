@@ -217,7 +217,7 @@ export const addPhoto = async (req: Request, res: Response) => {
 }
 
 /**
- * Add multiple photos to album
+ * Add photos to album
  */
 export const addPhotos = async (req: Request, res: Response) => {
 
@@ -253,7 +253,7 @@ export const addPhotos = async (req: Request, res: Response) => {
 			.includes(photo))) {
 			res.status(400).send({
 				status: "fail",
-				data: `No photo with id ${data.photo_id} exist on user ${req.token.email}`
+				data: `No photo with id ${data.photo_id.join(", ")} exist on user ${req.token.email}`
 			})
 			return
 		}
@@ -268,7 +268,7 @@ export const addPhotos = async (req: Request, res: Response) => {
 
 		res.status(200).send({
 			status: "success",
-			data: `Photos with id: ${data.photo_id} was successfully added to album ${result.title}`
+			data: `Photos with id: ${data.photo_id.join(", ")} was successfully added to album ${result.title}`
 		})
 	} catch (err) {
 		debug("Error thrown when adding photos %o to album %o: %o", data.photo_id, albumId, err)
@@ -333,14 +333,16 @@ export const removePhoto = async (req: Request, res: Response) => {
 			return
 		}
 
-		const photo = await prisma.photo.findFirstOrThrow( {
+		const photo = await prisma.photo.findFirstOrThrow({
 			where: {
-				id: photoId
-			}, 
+				id: photoId,
+			},
 			include: {
-				albums: { where: {
-					id: albumId
-				}}
+				albums: {
+					where: {
+						id: albumId
+					}
+				}
 			}
 		})
 
@@ -354,7 +356,7 @@ export const removePhoto = async (req: Request, res: Response) => {
 
 		await removePhotoFromAlbum(albumId, photoId)
 
-		res.status(200).send({ status: "success", data: `Photo with id ${photoId} was removed from album ${album.title}`})
+		res.status(200).send({ status: "success", data: `Photo with id ${photoId} was removed from album ${album.title}` })
 
 	} catch (err) {
 		debug("Error thrown when trying to remove photo %o from album %o: %o", photoId, albumId, err)

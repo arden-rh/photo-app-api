@@ -16,7 +16,7 @@ export const updateAlbumRules = [
 
 export const addPhotosToAlbumRules = [
 
-	body('photo_id').isArray({ min : 1 }).withMessage('The value must be an Array with numbers'),
+	body('photo_id').toArray().isArray({ min : 1 }).withMessage('The value must be an Array with numbers'),
 	body('photo_id.*').isInt().withMessage('The values inside the Array must be numbers')
 
 ]
