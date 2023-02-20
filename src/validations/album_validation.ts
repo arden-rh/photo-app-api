@@ -4,16 +4,15 @@ import { body } from 'express-validator'
 
 export const createAlbumRules = [
 
-	body('title').isString().withMessage('Has to be a string').bail().isLength({ min: 3 }).withMessage('Has to be at least 3 characters long')
+	body('title').trim().isString().withMessage('Has to be a string').bail().isLength({ min: 3 }).withMessage('Has to be at least 3 characters long')
 
-]
-
-export const addPhotoToAlbumRules = [
-
-	body('photo_id').isInt()
 ]
 
 export const addPhotosToAlbumRules = [
 
-	body('photo_id').isArray()
+	body('photo_id').trim().custom( async data => {
+		if (data.isInt || data.isArray ) {
+			return data
+		}
+	} )
 ]
