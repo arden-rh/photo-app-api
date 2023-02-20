@@ -4,7 +4,7 @@
 import Debug from 'debug'
 import { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
-import { createPhoto, getAllPhotos, getPhotoById, updatePhoto } from '../services/photo_services'
+import { createPhoto, deletePhoto, getAllPhotos, getPhotoById, updatePhoto } from '../services/photo_services'
 import { getUserByEmail } from '../services/user_service'
 
 // Create a new debug instance
@@ -15,10 +15,8 @@ const debug = Debug('uppgift-02:photo_controller')
  */
 export const index = async (req: Request, res: Response) => {
 
-	const user = await getUserByEmail(req.token!.email)
-
     try {
-		const photos = await getAllPhotos(user!.id)
+		const photos = await getAllPhotos(req.token.id)
 
 		res.status(200).send({
 			status: "success",
@@ -35,17 +33,15 @@ export const index = async (req: Request, res: Response) => {
  */
 export const show = async (req: Request, res: Response) => {
 
-	const user = await getUserByEmail(req.token!.email)
-
 	const photoId = Number(req.params.photoId)
 
 	try {
 		const photo = await getPhotoById(photoId)
 
-		if (photo.user_id !== user!.id) {
+		if (photo.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
-				data: "Not authorised access"
+				data: "No authorised access"
 			})
 			return
 		}
@@ -61,7 +57,7 @@ export const show = async (req: Request, res: Response) => {
 		})
 	} catch (err) {
 		debug("Error thrown when finding a photo %s", err)
-		res.status(500).send({ status: "error", message: `Error when trying to find the photo with id ${req.params.photoId}`})
+		res.status(500).send({ status: "error", message: `Error when trying to find the photo with id ${photoId}`})
 	}
 }
 
@@ -81,15 +77,13 @@ export const store = async (req: Request, res: Response) => {
 
     const data = matchedData(req)
 
-	const user = await getUserByEmail(req.token!.email)
-
 	try {
 
 		const photo = await createPhoto({
 			title: data.title,
 			url: data.url,
 			comment: data.comment || null,
-			user_id: user!.id
+			user_id: req.token.id
 		})
 
 		res.status(201).send({
@@ -118,32 +112,30 @@ export const update = async (req: Request, res: Response) => {
 		}
 	
 		const data = matchedData(req)
-
-		console.log(data, req.body)
-	
-		const user = await getUserByEmail(req.token!.email)
 	
 		const photoId = Number(req.params.photoId)
 	
 		try {
-	
-			const photo = await updatePhoto(photoId, data)
-	
-			if (photo.user_id !== user!.id) {
+
+			const photo = await getPhotoById(photoId)
+
+			if (photo.user_id !== req.token.id) {
 				res.status(401).send({
 					status: "fail",
-					data: "Not authorised access"
+					data: "No authorised access"
 				})
 				return
 			}
 	
+			const updatedPhoto = await updatePhoto(photoId, data)
+
 			res.status(201).send({
 				status: "success",
-				data: photo
+				data: updatedPhoto
 			})
 		} catch (err) {
-			debug("Error thrown when updating the photo %o : %o", data.id, err)
-			res.status(500).send({ status: "error", message: `Error thrown when trying to update photo ${data.id}`})
+			debug("Error thrown when updating the photo %o : %o", photoId, err)
+			res.status(500).send({ status: "error", message: `Error thrown when trying to update photo ${photoId}`})
 		}
 }
 
@@ -151,4 +143,31 @@ export const update = async (req: Request, res: Response) => {
  * Delete a photo
  */
 export const destroy = async (req: Request, res: Response) => {
+
+	const photoId = Number(req.params.photoId)
+
+	try {
+
+		const photo = await getPhotoById(photoId)
+
+		if (photo.user_id !== req.token.id) {
+			res.status(401).send({
+				status: "fail",
+				data: "No authorised access"
+			})
+			return
+		}
+
+		await deletePhoto(photoId)
+
+		res.status(200).send({ status: "success", data: `Photo ${photo.title} deleted` })
+
+	} catch (err) {
+		debug("Error thrown when trying to delete photo %o: %o", photoId, err)
+		res.status(500).send({
+			status: "error",
+			message: `Error thrown when deleting photo ${photoId}.`
+		})
+	}
+
 }

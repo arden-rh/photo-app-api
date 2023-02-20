@@ -5,8 +5,7 @@ import Debug from 'debug'
 import { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
 import prisma from '../prisma'
-import { addPhotosToAlbum, addPhotoToAlbum, createAlbum, deleteAlbum, getAlbumById, getAllAlbums, updateAlbum } from '../services/album_service'
-import { getUserByEmail } from '../services/user_service'
+import { addPhotosToAlbum, addPhotoToAlbum, createAlbum, deleteAlbum, getAlbumById, getAllAlbums, removePhotoFromAlbum, updateAlbum } from '../services/album_service'
 
 // Create a new debug instance
 const debug = Debug('uppgift-02:album_controller')
@@ -36,25 +35,13 @@ export const show = async (req: Request, res: Response) => {
 
 	const albumId = Number(req.params.albumId)
 
-	/* 	try {
-	
-			await getAlbumById(albumId, req.token.id)
-	
-		} catch (err) {
-	
-			res.status(401).send({
-				status: "fail",
-				data: "Not authorised access"
-			})
-		} */
-
 	try {
 		const album = await getAlbumById(albumId)
 
 		if (album.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
-				data: "Not authorised access"
+				data: "No authorised access"
 			})
 			return
 		}
@@ -128,19 +115,21 @@ export const update = async (req: Request, res: Response) => {
 
 	try {
 
-		const album = await updateAlbum(albumId, data)
+		const album = await getAlbumById(albumId)
 
 		if (album.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
-				data: "Not authorised access"
+				data: "No authorised access"
 			})
 			return
 		}
 
+		const updatedAlbum = await updateAlbum(albumId, data)
+
 		res.status(201).send({
 			status: "success",
-			data: album
+			data: updatedAlbum
 		})
 	} catch (err) {
 		debug("Error thrown when updating the album %o : %o", data.id, err)
@@ -199,7 +188,7 @@ export const addPhoto = async (req: Request, res: Response) => {
 
 			res.status(401).send({
 				status: "fail",
-				data: "Not authorised access"
+				data: "No authorised access"
 			})
 			return
 		}
@@ -209,7 +198,7 @@ export const addPhoto = async (req: Request, res: Response) => {
 		if (result.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
-				data: "Not authorised access"
+				data: "No authorised access"
 			})
 			return
 		}
@@ -252,7 +241,7 @@ export const addPhotos = async (req: Request, res: Response) => {
 		if (album.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
-				data: "Not authorised access"
+				data: "No authorised access"
 			})
 			return
 		}
@@ -305,7 +294,7 @@ export const destroy = async (req: Request, res: Response) => {
 		if (album.user_id !== req.token.id) {
 			res.status(401).send({
 				status: "fail",
-				data: "Not authorised access"
+				data: "No authorised access"
 			})
 			return
 		}
@@ -328,4 +317,50 @@ export const destroy = async (req: Request, res: Response) => {
  */
 export const removePhoto = async (req: Request, res: Response) => {
 
+	const albumId = Number(req.params.albumId)
+
+	const photoId = Number(req.params.photoId)
+
+	try {
+
+		const album = await getAlbumById(albumId)
+
+		if (album.user_id !== req.token.id) {
+			res.status(401).send({
+				status: "fail",
+				data: "No authorised access"
+			})
+			return
+		}
+
+		const photo = await prisma.photo.findFirstOrThrow( {
+			where: {
+				id: photoId
+			}, 
+			include: {
+				albums: { where: {
+					id: albumId
+				}}
+			}
+		})
+
+		if (photo.albums.length === 0) {
+			res.status(404).send({
+				status: "error",
+				message: "Could not find photo to remove."
+			})
+			return
+		}
+
+		await removePhotoFromAlbum(albumId, photoId)
+
+		res.status(200).send({ status: "success", data: `Photo with id ${photoId} was removed from album ${album.title}`})
+
+	} catch (err) {
+		debug("Error thrown when trying to remove photo %o from album %o: %o", photoId, albumId, err)
+		res.status(500).send({
+			status: "error",
+			message: `Error thrown when removing photo from album ${albumId}.`
+		})
+	}
 }
