@@ -6,7 +6,6 @@ import Debug from 'debug'
 import { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
 import jwt from 'jsonwebtoken'
-import prisma from '../prisma'
 import { JwtPayload } from '../types'
 import { createUser, getUserByEmail } from './../services/user_service'
 
@@ -46,7 +45,7 @@ export const register = async (req: Request, res: Response) => {
         })
 
         // Respond with 201 Created 
-        res.status(201).send({
+        res.status(200).send({
             status: "success", data: {
                 email: user.email,
                 first_name: user.first_name,
@@ -117,7 +116,7 @@ export const login = async (req: Request, res: Response) => {
     })
 
     // respond with access- and refresh-token
-    res.send({
+    res.status(200).send({
         status: "success",
         data: {
             access_token,
@@ -158,7 +157,7 @@ export const refresh = async (req: Request, res: Response) => {
 	try {
 
 		const payload = (jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || "") as unknown) as JwtPayload
-		debug("Yay got package: %o", payload)
+		debug("Package: %o", payload)
 
 		delete payload.iat
 		delete payload.exp
@@ -176,7 +175,7 @@ export const refresh = async (req: Request, res: Response) => {
 			expiresIn: process.env.REFRESH_TOKEN_LIFE_TIME || "1d"
 		})
 
-		res.send({
+		res.status(200).send({
 			status: "success",
 			data: {
 				access_token
