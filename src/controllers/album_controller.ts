@@ -174,7 +174,7 @@ export const addPhotos = async (req: Request, res: Response) => {
 			.includes(photo))) {
 			res.status(400).send({
 				status: "fail",
-				data: `Unable to add photos to album`
+				data: "Unable to add photos to album"
 			})
 			return
 		}
