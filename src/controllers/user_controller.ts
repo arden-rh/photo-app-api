@@ -1,6 +1,4 @@
-/**
- * User Controller
- */
+/** User Controller **/
 import bcrypt from 'bcrypt'
 import Debug from 'debug'
 import { Request, Response } from 'express'
@@ -69,9 +67,9 @@ export const login = async (req: Request, res: Response) => {
     // find user by email
     const user = await getUserByEmail(email)
     if (!user) {
-        return res.status(401).send({
+        return res.status(404).send({
             status: "fail",
-            message: "Authorization required",
+            message: "User not found"
         })
     }
 
@@ -80,7 +78,7 @@ export const login = async (req: Request, res: Response) => {
     if (!result) {
         return res.status(401).send({
             status: "fail",
-            message: "Authorization required",
+            message: "Authorization required"
         })
     }
 
@@ -96,23 +94,23 @@ export const login = async (req: Request, res: Response) => {
     if (!process.env.ACCESS_TOKEN_SECRET) {
         return res.status(500).send({
             status: "error",
-            message: "Access token secret undefined",
+            message: "Access token secret undefined"
         })
     }
 
     const access_token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: process.env.ACCESS_TOKEN_LIFETIME || '4h',
+        expiresIn: process.env.ACCESS_TOKEN_LIFETIME || '4h'
     })
 
     // sign payload with refresh-token secret and get refresh-token
     if (!process.env.REFRESH_TOKEN_SECRET) {
         return res.status(500).send({
             status: "error",
-            message: "Refresh token secret undefined",
+            message: "Refresh token secret undefined"
         })
     }
     const refresh_token = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: process.env.REFRESH_TOKEN_LIFETIME || '1d',
+        expiresIn: process.env.REFRESH_TOKEN_LIFETIME || '1d'
     })
 
     // respond with access- and refresh-token
@@ -130,64 +128,64 @@ export const login = async (req: Request, res: Response) => {
  */
 export const refresh = async (req: Request, res: Response) => {
 
-    	// check for auth header or ❌
-	if (!req.headers.authorization) {
-		debug("Authorization header missing")
+    // check for auth header or ❌
+    if (!req.headers.authorization) {
+        debug("Authorization header missing")
 
-		return res.status(401).send({
-			status: "fail",
-			data: "Authorization required"
-		})
-	}
+        return res.status(401).send({
+            status: "fail",
+            data: "Authorization required"
+        })
+    }
 
-	// split auth header
-	const [authSchema, token] = req.headers.authorization.split(" ")
+    // split auth header
+    const [authSchema, token] = req.headers.authorization.split(" ")
 
-	// check that auth schema is bearer or ❌
-	if (authSchema.toLowerCase() !== "bearer") {
-		debug("Authorization schema isn't Bearer")
+    // check that auth schema is bearer or ❌
+    if (authSchema.toLowerCase() !== "bearer") {
+        debug("Authorization schema isn't Bearer")
 
-		return res.status(401).send({
-			status: "fail",
-			data: "Wrong authorization method"
-		})
-	}
+        return res.status(401).send({
+            status: "fail",
+            data: "Wrong authorization method"
+        })
+    }
 
-	// Verify refresh-token and get refresh-token payload
-	try {
+    // Verify refresh-token and get refresh-token payload
+    try {
 
-		const payload = (jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || "") as unknown) as JwtPayload
-		debug("Package: %o", payload)
+        const payload = (jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || "") as unknown) as JwtPayload
+        debug("Package: %o", payload)
 
-		delete payload.iat
-		delete payload.exp
+        delete payload.iat
+        delete payload.exp
 
-		// Issue a new access token
-		if (!process.env.ACCESS_TOKEN_SECRET) {
+        // Issue a new access token
+        if (!process.env.ACCESS_TOKEN_SECRET) {
 
-			return res.status(500).send({
-				status: "error",
-				message: "Refresh token undefined"
-			})
-		}
+            return res.status(500).send({
+                status: "error",
+                message: "Refresh token undefined"
+            })
+        }
 
-		const access_token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-			expiresIn: process.env.ACCESS_TOKEN_LIFETIME || "1d"
-		})
+        const access_token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: process.env.ACCESS_TOKEN_LIFETIME || "1d"
+        })
 
-		res.status(200).send({
-			status: "success",
-			data: {
-				access_token
-			},
-		})
+        res.status(200).send({
+            status: "success",
+            data: {
+                access_token
+            }
+        })
 
-	} catch (err) {
-		debug("Token failed verification", err)
+    } catch (err) {
+        debug("Token failed verification", err)
 
-		return res.status(401).send({
-			status: "fail",
-			data: "Authorization required"
-		})
-	}
+        return res.status(401).send({
+            status: "fail",
+            data: "Authorization required"
+        })
+    }
 }

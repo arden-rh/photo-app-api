@@ -1,6 +1,4 @@
-/**
- * JWT Authentication Middleware
- */
+/** JWT Authentication Middleware **/
 
 import Debug from "debug"
 import { Response, Request, NextFunction } from "express"
@@ -16,7 +14,7 @@ const debug = Debug("uppgift-02:jwt")
  * Authorization: Bearer <token>
  */
 export const validateToken = (req: Request, res: Response, next: NextFunction) => {
-	debug("This is JWT")
+	debug("Running JWT validation")
 
 	// check for auth header or ❌
 	if (!req.headers.authorization) {
@@ -42,11 +40,10 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
 	}
 
 	// validate token and attach payload to request or ❌
-
 	try {
 
 		const payload = (jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "") as unknown) as JwtPayload
-		debug("Yay got package: %o", payload)
+		debug("Package: %o", payload)
 
 		req.token = payload
 

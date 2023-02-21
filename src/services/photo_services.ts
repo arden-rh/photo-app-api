@@ -5,6 +5,7 @@ import { CreatePhotoData, UpdatePhotoData } from "../types"
 
 /**
  * Get all photos
+ * @param id User Id
  */
 export const getAllPhotos = async ( id : number) => {
 
@@ -18,12 +19,11 @@ export const getAllPhotos = async ( id : number) => {
 			user_id: false
 		}
 	})
-
 }
 
 /**
  * Get a single photo by id
- * @param id Photo Id
+ * @param id photoId
  */
 export const getPhotoById = async (id : number) => {
 
@@ -44,6 +44,8 @@ export const createPhoto = async (data : CreatePhotoData) => {
 
 /**
  * Update photo by id
+ * @param id photoId
+ * @param data Data to update photo
  */
 export const updatePhoto = async (id : number, data : UpdatePhotoData) => {
 

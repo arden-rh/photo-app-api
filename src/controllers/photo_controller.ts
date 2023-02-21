@@ -1,11 +1,8 @@
-/**
- * Photo Controller
- */
+/** Photo Controller **/
 import Debug from 'debug'
 import { Request, Response } from 'express'
 import { matchedData, validationResult } from 'express-validator'
 import { createPhoto, deletePhoto, getAllPhotos, getPhotoById, updatePhoto } from '../services/photo_services'
-import { getUserByEmail } from '../services/user_service'
 
 // Create a new debug instance
 const debug = Debug('uppgift-02:photo_controller')
@@ -169,5 +166,4 @@ export const destroy = async (req: Request, res: Response) => {
 			message: `Error thrown when deleting photo ${photoId}.`
 		})
 	}
-
 }

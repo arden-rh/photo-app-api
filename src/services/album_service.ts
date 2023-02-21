@@ -75,7 +75,6 @@ export const addPhotoToAlbum = async (albumId: number, photoId: number) => {
 			}
 		}
 	})
-
 }
 
 /**
@@ -97,7 +96,6 @@ export const addPhotosToAlbum = async (albumId: number, photoIds: Array<AddPhoto
 			}
 		}
 	})
-
 }
 
 /**
@@ -109,9 +107,13 @@ export const deleteAlbum = async (id: number) => {
 	return await prisma.album.delete({
 		where: { id }
 	})
-
 }
 
+/**
+ * Remove single photo from album
+ * @param albumId 
+ * @param photoId 
+ */
 export const removePhotoFromAlbum = async (albumId: number, photoId: number) => {
 
 	return await prisma.album.update({
@@ -121,6 +123,5 @@ export const removePhotoFromAlbum = async (albumId: number, photoId: number) => 
 				disconnect: { id: photoId }
 			}
 		}
-
 	})
 }

@@ -1,4 +1,4 @@
-/** User Validation Rules **/
+/** Album Validation Rules **/
 
 import { body } from 'express-validator'
 

@@ -1,6 +1,4 @@
-/**
- * Photo Router
- */
+/** Photo Router **/
 import express from 'express'
 import { index, show, store, update, destroy } from '../controllers/photo_controller'
 import { createPhotoRules, updatePhotoRules } from '../validations/photo_validation'

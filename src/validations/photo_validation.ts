@@ -1,4 +1,4 @@
-/** User Validation Rules **/
+/** Photo Validation Rules **/
 
 import { body } from 'express-validator'
 

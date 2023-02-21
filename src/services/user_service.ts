@@ -1,4 +1,4 @@
-/* User Service */
+/** User Service **/
 
 import prisma from "../prisma"
 import { CreateUserData } from "../types"
@@ -6,7 +6,6 @@ import { CreateUserData } from "../types"
 /**
  * Get a single user by email
  * @param email User email
- * @returns
  */
 export const getUserByEmail = async (email: string) => {
 	return await prisma.user
@@ -16,7 +15,6 @@ export const getUserByEmail = async (email: string) => {
 /**
  * Get a single user by id
  * @param id User Id
- * @returns
  */
 export const getUserById = async (id: number) => {
 
@@ -29,9 +27,7 @@ export const getUserById = async (id: number) => {
 
 /**
  * Create a new user
- *
  * @param data validated data
- * @returns
  */
 export const createUser = async (data : CreateUserData) => {
 
