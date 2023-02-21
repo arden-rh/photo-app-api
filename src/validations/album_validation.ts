@@ -10,7 +10,7 @@ export const createAlbumRules = [
 
 export const updateAlbumRules = [
 
-	body('title').optional().trim().isString().withMessage('The value has to be a string with at least 3 characters long')
+	body('title').optional().trim().isString().isLength({ min: 3 }).withMessage('The value has to be a string with at least 3 characters long')
 
 ]
 
