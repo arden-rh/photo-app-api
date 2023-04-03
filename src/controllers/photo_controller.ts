@@ -69,7 +69,7 @@ export const store = async (req: Request, res: Response) => {
 		return res.status(400).send({
 			status: "fail",
 			data: validationErrors.array()
-		});
+		})
 	}
 
     const data = matchedData(req)
