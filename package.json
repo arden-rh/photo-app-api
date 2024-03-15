@@ -19,7 +19,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
-    "@types/debug": "^4.1.7",
+    "@types/debug": "^4.1.12",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.11.18",
     "env-cmd": "^10.1.0",
