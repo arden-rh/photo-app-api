@@ -21,7 +21,7 @@
     "@types/cors": "^2.8.17",
     "@types/debug": "^4.1.12",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.14.0",
     "env-cmd": "^10.1.0",
     "nodemon": "^3.1.0",
     "prisma": "^5.12.1",
