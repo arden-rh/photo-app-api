@@ -31,7 +31,7 @@
   "dependencies": {
     "@prisma/client": "^7.2.0",
     "@types/express": "^5.0.6",
-    "@types/morgan": "^1.9.9",
+    "@types/morgan": "^1.9.10",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "cross-env": "^10.1.0",
